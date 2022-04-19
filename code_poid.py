@@ -3,16 +3,17 @@ import RPi.GPIO as GPIO
 import grovepi
 
 
-grove_force = 0
+grove_force = 14
 
 
 grovepi.pinMode(grove_force,"INPUT")
-
+time.sleep(2)
 if __name__ == "__main__":
-	#print("hello")
+    print("hello")
     while(1):
         try:
             value = grovepi.analogRead(grove_force)
-            time.sleep(0.1)
+            print("weight:" + str(value))
+            time.sleep(0.2)
         except IOError:
             print("error")
