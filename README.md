@@ -2,4 +2,4 @@
 
 We quit HS422 servo and its code.
 
-There is a problem that how to active grove pi in raspberry pi.
+Now we haven't actived the grove pi in raspberry pi.
