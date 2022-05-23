@@ -9,19 +9,16 @@ pwm.start(20)
 time.sleep(2)
 
 duty = 2
-#from 0 degree to 180 degree
-while duty <= 12:
-    pwm.ChangeDutyCycle(duty)
-    time.sleep(1)
-    duty = duty + 1
-    
-time.sleep(2)
 
-#back to 0 degree
+# 0 degree duty = 2 and 180 degree duty =12
 pwm.ChangeDutyCycle(2)
 
-time.sleep(1)
-pwm.ChangeDutyCycle(0)
+temp = input("choose the temprature[0-250]:")
+position = float(temp)*180/250
+duty += position/18 
+
+pwm.ChangeDutyCycle(duty)
+time.sleep(3)
 
 pwm.stop()
 GPIO.cleanup()
