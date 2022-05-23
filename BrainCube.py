@@ -3,8 +3,9 @@ import RPi.GPIO as GPIO
 import grovepi
 import os
 
-servoPinTemp = 11
-servoPinTimer = 13
+servoPinTemp = 13
+servoPinTimer = 15
+servoPinTour = 11
 grove_force = 14
 TRIG = 23
 ECHO = 24
@@ -17,19 +18,27 @@ def DHT():
     
 def poid():
     grovepi.pinMode(grove_force,"INPUT")
-    value = grovepi.analogRead(grove_force)
+    value = float(grovepi.analogRead(grove_force))/325
     #print("weight:" + str(value))
     time.sleep(0.2)
     return value
         
-def servo():
+def servo(temp,timer,tour):
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(servoPinTemp,GPIO.OUT)
     GPIO.setup(servoPinTimer,GPIO.OUT)
+    GPIO.setup(servoPinTour,GPIO.OUT)
     pwm1 = GPIO.PWM(servoPinTemp,50)
     pwm2 = GPIO.PWM(servoPinTimer,50)
-    pwm1.start(20)
-    pwm2.start(20)
+    pwm3 = GPIO.PWM(servoPinTour,50)
+    if tour == 0:
+        pwm3.start(6)
+    else:
+        pwm3.start(13)
+    
+    pwm3.stop()
+    pwm1.start(2)
+    pwm2.start(2)
     time.sleep(2)   
     duty1 = 2
     duty2 = 2
@@ -37,11 +46,11 @@ def servo():
     pwm1.ChangeDutyCycle(2)
     pwm2.ChangeDutyCycle(2)
 
-    temp = input("choose the temprature[0-250]:")
+    #temp = input("choose the temprature[0-250]:")
     position1 = float(temp)*180/250
     duty1 += position1/18
     
-    timer = input("choose the time[0-9]:")
+    #timer = input("choose the time[0-9]:")
     position2 = float(timer)*180/9
     duty2 += position1/18 
 
@@ -52,6 +61,7 @@ def servo():
 
     pwm1.stop()
     pwm2.stop()
+   
     GPIO.cleanup()
 
     
@@ -79,14 +89,16 @@ def telemetre():
 
 
 if __name__ == "__main__":
-    servo()
+    servo(100,5,1)
     while(1):
         try:
-            print("----------------------")
-            w = poid()           
-            print("weight:" + str(w))
-            #d = telemetre()
-            #print('Distance:',d,'cm')
+            print("-------------------")
+            w = poid()
+            w =round(w, 2)
+            print("weight:" + str(w),"kg")
+            d = telemetre()
+            d = round(1 - 25.0/d,1)
+            print('pate reste:',d,'%')
             DHT()
             
         except IOError:
