@@ -4,8 +4,8 @@ import grovepi
 import os
 
 servoPinTemp = 13
-servoPinTimer = 15
-servoPinTour = 11
+servoPinTimer = 11
+servoPinTour = 12
 grove_force = 14
 TRIG = 23
 ECHO = 24
@@ -23,48 +23,74 @@ def poid():
     time.sleep(0.2)
     return value
         
-def servo(temp,timer,tour):
+def servoTemp(temp):
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(servoPinTemp,GPIO.OUT)
-    GPIO.setup(servoPinTimer,GPIO.OUT)
-    GPIO.setup(servoPinTour,GPIO.OUT)
-    pwm1 = GPIO.PWM(servoPinTemp,50)
-    pwm2 = GPIO.PWM(servoPinTimer,50)
-    pwm3 = GPIO.PWM(servoPinTour,50)
-    if tour == 0:
-        pwm3.start(6)
-    else:
-        pwm3.start(13)
     
-    pwm3.stop()
-    pwm1.start(2)
-    pwm2.start(2)
-    time.sleep(2)   
+    pwm1 = GPIO.PWM(servoPinTemp,50)
+
+    pwm1.start(0)
+    time.sleep(1)   
     duty1 = 2
-    duty2 = 2
 # 0 degree duty = 2 and 180 degree duty =12
     pwm1.ChangeDutyCycle(2)
-    pwm2.ChangeDutyCycle(2)
 
     #temp = input("choose the temprature[0-250]:")
     position1 = float(temp)*180/250
     duty1 += position1/18
     
-    #timer = input("choose the time[0-9]:")
-    position2 = float(timer)*180/9
-    duty2 += position1/18 
 
     pwm1.ChangeDutyCycle(duty1)
     time.sleep(1)
+
+    pwm1.stop()
+   
+    GPIO.cleanup()
+
+def servoTimer(timer):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(servoPinTimer,GPIO.OUT)
+    pwm2 = GPIO.PWM(servoPinTimer,50)
+
+    pwm2.start(0)
+    time.sleep(1)   
+    duty2 = 2
+# 0 degree duty = 2 and 180 degree duty =12
+    pwm2.ChangeDutyCycle(2)
+
+    #timer = input("choose the time[0-9]:")
+    position2 = float(timer)*180/9
+    duty2 += position2/18 
+
     pwm2.ChangeDutyCycle(duty2)
     time.sleep(1)
 
-    pwm1.stop()
     pwm2.stop()
    
     GPIO.cleanup()
 
+def servoTour(tour):
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(servoPinTour,GPIO.OUT)
     
+    pwm1 = GPIO.PWM(servoPinTour,50)
+
+    pwm1.start(0)
+    time.sleep(1)   
+    duty1 = 2
+# 0 degree duty = 2 and 180 degree duty =12
+    pwm1.ChangeDutyCycle(2)
+
+    position1 = float(tour)*90
+    duty1 += position1/18
+    
+
+    pwm1.ChangeDutyCycle(duty1)
+    time.sleep(1)
+
+    pwm1.stop()
+   
+    GPIO.cleanup()
 def telemetre():
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
@@ -89,12 +115,14 @@ def telemetre():
 
 
 if __name__ == "__main__":
-    servo(100,5,1)
+    servoTemp(0)
+    servoTimer(0)
+   # servoTour(0)
     while(1):
         try:
             print("-------------------")
             w = poid()
-            w =round(w, 2)
+            w =round(w/3, 2)
             print("weight:" + str(w),"kg")
             d = telemetre()
             d = round(1 - 25.0/d,1)
