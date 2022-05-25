@@ -173,11 +173,15 @@ int main() {
 		}
 		
         //Output results		
-		printf("PTAT: %4.1f [degC], Temperature: ", ptat);
+		//printf("PTAT: %4.1f [degC], Temperature: ", ptat);
+		printf("Temperature inside: ");
+		double sum = 0;
 		for (i = 0; i < N_PIXEL; i++) {
-		    printf("%4.1f, ", pix_data[i]);
+		    sum += pix_data[i];
+		    //printf("%4.1f, ", pix_data[i]);
 		}
-		printf("[degC]\n");
+		printf("%4.1f", sum/N_PIXEL);
+		//printf("[degC]\n");
 		
 		delay(250);
 	//}

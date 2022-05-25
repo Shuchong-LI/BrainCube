@@ -2,10 +2,6 @@ import time
 import RPi.GPIO as GPIO
 import grovepi
 import os
-from bs4 import BeautifulSoup
-import urllib.request as urllib
-
-import re
 
 servoPinTemp = 13
 servoPinTimer = 11
@@ -14,42 +10,6 @@ grove_force = 14
 TRIG = 23
 ECHO = 24
 
-def web():
-    url = "https://www.kilobet.fr/res.php"
-
-    page = urllib.urlopen(url)
-
-    soup = BeautifulSoup(page,'html.parser')
-
-    miam = soup.find('div',attrs = {'class':'Nom'})
-    nom = miam.text
-    #print(nom)
-
-    miam2 = soup.find('div',attrs = {'class':'Nombre'})
-    nombre = int(miam2.text)
-    #print(nombre)
-    
-    return [nombre,nom]
-
-def fairecrepe(nb):
-    count = 0
-    weight = poid()
-    
-    servoTimer(5)
-    servoTemp(200)
-    time1 = time.clock()
-    while count < nb:
-        if time.clock() - time1 > 50:
-            time1 = time.clock()
-            print("crepe " + str(count) + " en cours")
-            count += 1
-        if count == 3 :
-            servoTour(1)
-            time.sleep(5)
-            servoTour(0)
-            count += 1
-    print("Commande terminee")
-        
 def DHT():
     ficher = os.popen("./test")
     res = ficher.read()
@@ -141,7 +101,6 @@ def telemetre():
     GPIO.output(TRIG, True)
     time.sleep(0.00001)
     GPIO.output(TRIG, False)
-    pulse_start = 0
     while GPIO.input(ECHO)==0:
         pulse_start = time.time()
     while GPIO.input(ECHO)==1:
@@ -156,30 +115,18 @@ def telemetre():
 
 
 if __name__ == "__main__":
-    #servoTemp(0)
-    #servoTimer(0)
-    servoTour(0)
-    [nombre,nom] = web()
-    print("Debut process crepes")
-    
+    servoTemp(0)
+    servoTimer(0)
+   # servoTour(0)
     while(1):
         try:
-            if nom != web()[1] or nombre != web()[0]:
-                [nombre,nom] = web()
-                print(nom + " ordered " + str(nombre) + " crepes")
-                fairecrepe(nombre)
-            else:
-                print("En attente de commandes")
             print("-------------------")
             w = poid()
             w =round(w/3, 2)
             print("weight:" + str(w),"kg")
             d = telemetre()
-            #print(d)
-            d = round(1 - d/25.3,3)
-            if d < 0:
-                d = 0
-            print('pate reste:',d*100,'%')
+            d = round(1 - 25.0/d,1)
+            print('pate reste:',d,'%')
             DHT()
             
         except IOError:
